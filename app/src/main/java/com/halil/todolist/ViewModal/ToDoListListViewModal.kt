@@ -1,6 +1,7 @@
 package com.halil.todolist.ViewModal
 
 import android.content.Context
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.halil.todolist.Db.AppDatabase
@@ -13,6 +14,7 @@ class ToDoListListViewModal(
 ):ViewModel() {
 
     private lateinit var repository:RoomRepository
+    var toDoList= MutableLiveData<List<ToDoList>>()
 
     init {
         viewModelScope.launch {
@@ -21,9 +23,10 @@ class ToDoListListViewModal(
         }
     }
 
-    fun ListAllToDo(toDoList: ToDoList){
+    fun ListAllToDo(){
         viewModelScope.launch {
-            repository.listAllToDo()
+
+            toDoList.postValue(repository.listAllToDo())
         }
     }
 

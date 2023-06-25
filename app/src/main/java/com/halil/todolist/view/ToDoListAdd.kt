@@ -70,10 +70,6 @@ fun ToDoListAdd(navController: NavController){
                         if(tf_ToDo.value!=null){
                             var toDoList=ToDoList(tf_ToDo.value)
                             viewModal.addToDo(toDoList)
-
-                            Log.e("mesaj",tf_ToDo.value)
-
-
                         }
                     
                 }) {

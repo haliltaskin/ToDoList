@@ -2,9 +2,12 @@ package com.halil.todolist.view
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,6 +21,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,11 +52,20 @@ fun ToDoList(navController: NavController){
     )
 
 
-    val aramaYap= remember { mutableStateOf(false) }
-    val tf_ara= remember { mutableStateOf("") }
+
     val context= LocalContext.current as Activity
     val viewModal:ToDoListListViewModal= viewModel(factory = ToDoListFactory(context))
-  Scaffold(
+    val toDoList=viewModal.toDoList.observeAsState()
+    val aramaYap= remember { mutableStateOf(false) }
+    val tf_ara= remember { mutableStateOf("") }
+
+
+    LaunchedEffect(key1 =true ){
+        viewModal.ListAllToDo()
+    }
+
+    Scaffold(
+
 
       topBar = {
                TopAppBar(
@@ -114,12 +127,21 @@ fun ToDoList(navController: NavController){
           ){
               LazyColumn(){
 
+                  item {
+                      toDoList.value?.let {
+                          it.forEachIndexed{index, toDoList ->
+                              var mod=index%4
+                              ToDoListItem(
+                                  toDoList =toDoList ,
+                                  color = colorList[index]) {
+
+                              }
+                          }
+                      }
+
+                  }
 
               }
-
-
-
-
 
               FloatingActionButton(
                   modifier = Modifier
@@ -141,10 +163,33 @@ fun ToDoList(navController: NavController){
 
 
 @Composable
-fun ToDoListItem(toDoList: ToDoList,color: Color){
+fun ToDoListItem(toDoList: ToDoList,color: Color,deleteClick:() ->Unit){
     
-    Column() {
-        
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 25.dp, end = 25.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(5.dp)
+                .fillMaxWidth()
+        ){
+            Column(modifier = Modifier
+                .align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                Text(text = toDoList.toDo)
+            }
+            Icon(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .clickable {
+                        deleteClick()
+                    }
+                ,painter = painterResource(id = R.drawable.delete_jpg),
+                contentDescription ="Delete" )
+        }
     }
     
 }
